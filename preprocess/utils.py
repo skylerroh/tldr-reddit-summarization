@@ -3,7 +3,7 @@ import tensorflow as tf
 
 
 # top 50 subreddits in dataset, counted in DataProcessing.ipynb
-top50subreddits = top50 = [
+top50subreddits = [
     'AskReddit',
     'relationships',
     'leagueoflegends',
@@ -56,10 +56,64 @@ top50subreddits = top50 = [
     'teenagers'
 ]
 
+top50subreddits_split = [
+    'ask reddit',
+    'relationships',
+    'leagueoflegends',
+    'tifu',
+    'relationship advice',
+    'trees',
+    'gaming',
+    'atheism',
+    'advice animals',
+    'funny',
+    'politics',
+    'pics',
+    'sex',
+    'WTF',
+    'explain like im five',
+    'today i learned',
+    'fitness',
+    'i am a',
+    'world news',
+    'DotA2',
+    'two x chromosomes',
+    'videos',
+    'DestinyTheGame',
+    'reddit.com',
+    'off my chest',
+    'build apc',
+    'ask men',
+    'personal finance',
+    'summoner school',
+    'technology',
+    'wow',
+    'no fap',
+    'starcraft',
+    'dating advice',
+    'ask science',
+    'games',
+    'news',
+    'tales from tech support',
+    'depression',
+    'pc master race',
+    'Guildwars2',
+    'magicTCG',
+    'lose it',
+    'GlobalOffensive',
+    'electronic cigarette',
+    'movies',
+    'self',
+    'advice',
+    'drugs',
+    'teenagers'
+]
+
+top50subreddits_splitcompound = {top50subreddits[i]: top50subreddits_split[i] for i in range(len(top50subreddits))}
 
 def load_reddit_data_from_json():
     reddit_posts = []
-    with open('corpus-webis-tldr-17.json', 'r') as f:
+    with open('../corpus-webis-tldr-17.json', 'r') as f:
         for i, line in enumerate(f):
             post = json.loads(line)
             del post['body']
@@ -78,20 +132,19 @@ def extract_tensors(reddit_posts):
 
     while reddit_posts:
         post = reddit_posts.pop()
-        if 'subreddit' in post:
+        if 'subreddit' in post and 'title' in post:
             subreddits.append(post['subreddit'])
-            content.append(post['content'])
+            content.append(post['title'] +
+                           ' in ' +
+                           top50subreddits_splitcompound[post['subreddit']] +
+                           '.\n' +
+                           post['content'])
             summary.append(post['summary'])
 
     subreddits = tf.convert_to_tensor(subreddits)
     content = tf.convert_to_tensor(content)
     summary = tf.convert_to_tensor(summary)
     return subreddits, content, summary
-
-
-# def get_features_dataset(subreddits, content, summary):
-#     features_dataset = tf.data.Dataset.from_tensor_slices((subreddits, content, summary))
-#     return features_dataset
 
 
 # https://www.tensorflow.org/tutorials/load_data/tfrecord
