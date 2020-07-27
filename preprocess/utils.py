@@ -129,6 +129,8 @@ def extract_tensors(reddit_posts):
     subreddits = []
     content = []
     summary = []
+    title = []
+    raw_content = []
 
     while reddit_posts:
         post = reddit_posts.pop()
@@ -139,12 +141,16 @@ def extract_tensors(reddit_posts):
                            top50subreddits_splitcompound[post['subreddit']] +
                            '.\n' +
                            post['content'])
+            title.append(post['title'])
             summary.append(post['summary'])
+            raw_content.append(post['content'])
 
     subreddits = tf.convert_to_tensor(subreddits)
     content = tf.convert_to_tensor(content)
     summary = tf.convert_to_tensor(summary)
-    return subreddits, content, summary
+    title = tf.convert_to_tensor(title)
+    raw_content = tf.convert_to_tensor(raw_content)
+    return subreddits, content, summary, title, raw_content
 
 
 # https://www.tensorflow.org/tutorials/load_data/tfrecord
@@ -155,7 +161,7 @@ def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 
-def serialize_example(topics, inputs, targets):
+def serialize_example(topics, inputs, targets, titles, raw_inputs):
     """
     Creates a tf.Example message ready to be written to a file.
     """
@@ -165,6 +171,8 @@ def serialize_example(topics, inputs, targets):
       'topics': _bytes_feature(topics),
       'inputs':  _bytes_feature(inputs),
       'targets': _bytes_feature(targets),
+      'titles': _bytes_feature(titles),
+      'raw_inputs': _bytes_feature(raw_inputs),
     }
 
     # Create a Features message using tf.train.Example.
@@ -176,7 +184,7 @@ def serialize_example(topics, inputs, targets):
 def tf_serialize_example(row):
     tf_string = tf.py_function(
         serialize_example,
-        (row['topics'], row['inputs'], row['targets']),
+        (row['topics'], row['inputs'], row['targets'], row['titles'], row['raw_inputs']),
         tf.string)
     return tf.reshape(tf_string, ())
 
@@ -189,11 +197,15 @@ def parser_fn(serialized_example):
           "topics": tf.io.FixedLenFeature([], tf.string),
           "inputs": tf.io.FixedLenFeature([], tf.string),
           "targets": tf.io.FixedLenFeature([], tf.string),
+          "titles": tf.io.FixedLenFeature([], tf.string),
+          "raw_inputs": tf.io.FixedLenFeature([], tf.string),
       })
     return {
       "topics": features["topics"],
       "inputs": features["inputs"],
       "targets": features["targets"],
+      "titles": features["titles"],
+      "raw_inputs": features["raw_inputs"],
       "supervised": tf.constant(True)
     }
 
