@@ -28,6 +28,8 @@ The motivation behind the hierarchical model is to distil longer text down to on
   - write each post into TFRecord format
   - inputs = title + subreddit + post text.  
   
+### Models 
+**Extractive**
 `ExtractiveSentenceSelection_HiBert.ipynb`  
   - ingest TFRecords and process into input form encoding each document as list[sentences] where each sentence is list[wordpiece tokens]
   - create model architecture that 
@@ -36,4 +38,12 @@ The motivation behind the hierarchical model is to distil longer text down to on
     - feed-forward dense layers
     - predict probability of salience
     - rank top-k sentences and concat chronologically into a new text input for PEGASUS encoder-decoder for abstractive summarization
+   
+**Abstractive**
+PEGASUS  
+Run on TF 1.15 on gcp on n1-highmem-8 (8cpu, 52gb ram) with an nvidia tesla T4, batch sizes and number of epochs able to run limited by compute capacity and time.
+
+Training example: `python3 pegasus/bin/train.py --params=reddit_tldr_subreddit_samples_extracted20 --param_overrides=vocab_filename=ckpt/pegasus_ckpt/c4.unigram.newline.10pct.96000.model,learning_rate=0.0001,batch_size=4,max_input_len=512,train_steps=50000 --train_init_checkpoint=ckpt/pegasus_ckpt/model.ckpt-1500000 --model_dir=ckpt/pegasus_ckpt/reddit_tldr_w_title_extracted20`
+
+Eval example: `python3 pegasus/bin/evaluate.py --params=reddit_tldr_subreddit_samples_extracted20 --param_overrides=vocab_filename=ckpt/pegasus_ckpt/c4.unigram.newline.10pct.96000.model,batch_size=4,max_input_len=512,beam_size=8,beam_alpha=0.6 --model_dir=ckpt/pegasus_ckpt/reddit_tldr_w_title_extracted20/model.ckpt-50000`
     
