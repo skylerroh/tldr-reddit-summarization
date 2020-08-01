@@ -19,12 +19,15 @@ The motivation behind the hierarchical model is to distil longer text down to on
   - read in data in original json form
   - determine frequency of various subreddits in dataset
   - inspect proportion of unknown token occurences   
+  
 `eda/Baseline_ROUGE.ipynb`  
   - examine baseline rouge scores of basic extraction from the text: first 128 tokens, last 128 tokens, first 64 tokens + last 64 tokens   
+  
 `preprocess/TFRecords.ipynb`  
   - filter records with titles and subreddits that are non-null
   - write each post into TFRecord format
   - inputs = title + subreddit + post text.  
+  
 `ExtractiveSentenceSelection_HiBert.ipynb`  
   - ingest TFRecords and process into input form encoding each document as list[sentences] where each sentence is list[wordpiece tokens]
   - create model architecture that 
