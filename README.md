@@ -4,7 +4,7 @@ The motivation behind the hierarchical model is to distil longer text down to on
 
 ## Abstract
 Abstractive summarization has made substantial progress in recent years due to the introduction of transformers along with various self-supervised pretraining techiniques. While the majority of research in this area has been performed on news article datasets, other forms of text have not been widely tested. Other mediums such as posts on the web forum Reddit are significantly less structured. In this paper, a hierarchical model composed of a transformer-based sentence encoder and additional multihead-attention for sentence selection is proposed to better retain salient information while remaining within sequence length limits imposed by transformer architectures.
-[Paper: Abststractive Summarization of Social Media Using Multiple Transformer Stages] (https://github.com/skylerroh/tldr-reddit-summarization/blob/master/Abstractive_Summarization_of_Social_Media_Using_Multiple_Transformer_Stages___Skyler_Roh.pdf).
+[Paper: Abststractive Summarization of Social Media Using Multiple Transformer Stages](https://github.com/skylerroh/tldr-reddit-summarization/blob/master/Abstractive_Summarization_of_Social_Media_Using_Multiple_Transformer_Stages___Skyler_Roh.pdf).
 
 ## Dataset
 [TL;DR: Mining Reddit to Learn Automatic Summarization, EMNLP 2017 - New Frontiers in Summarization workshop](https://github.com/webis-de/webis-tldr-17-corpus).   
